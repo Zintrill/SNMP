@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DASHBOARD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {# Ładujemy globalne style background oraz specyficzne dla dashboardu #}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/background.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/dashboard.css') }}">
+    {# Ładowanie zewnętrznych skryptów CSS/JS  (Chart.js, FontAwesome) #}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://kit.fontawesome.com/bb4f511674.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-dash">
+        <nav class="top-nav">
+            <img class="img-log" src="{{ asset('img/logo.svg') }}" alt="Logo">
+            <ul class="nav-menu">
+                <li><a href="{{ path('app_dashboard_index') }}" class="nav-link button"><i class="fa-solid fa-table"></i> Dashboard</a></li>
+                <li><a href="{{ path('app_snmp_index') }}" class="nav-link button"><i class="fa-solid fa-desktop"></i> SNMP Overview</a></li>
+                <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li>
+                <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
+            </ul>
+            {# Załóżmy, że zmienna username jest przekazywana z kontrolera #}
+            <span class="nav-text">{{ username|default('Guest') }}</span>
+            <nav class="user-options">
+                <div class="options">
+                    <button id="userButton"><i class="fa-solid fa-circle-user"></i></button>
+                    <ul class="options-menu" id="optionsMenu">
+                        <li><a href="#" class="option-button"><i class="fa-solid fa-gear"></i>Options</a></li>
+                        <li><a href="#" class="option-button"><i class="fa-solid fa-question"></i>About</a></li>
+                        <li>
+                            <form action="{{ path('app_logout') }}" method="post">
+                                <button type="submit" class="option-button"><i class="fa-solid fa-power-off"></i> Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </nav>
+        <div class="hamburger">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <div class="page-title"><h1>Dashboard</h1></div>
+        <div class="container-main">
+            <div class="alerts-buttons">
+                <button class="button warning-button">
+                    <div><i class="fa-solid fa-exclamation-triangle"></i> <span class="count">10</span></div>
+                    <div>Warnings</div>
+                </button>
+                <button class="button critical-button">
+                    <div><i class="fa-solid fa-exclamation-triangle"></i> <span class="count">5</span></div>
+                    <div>Critical</div>
+                </button>
+            </div>
+            <div class="donuts">
+                <div class="chart1">
+                    <canvas id="donutChart1" width="400" height="400"></canvas>
+                </div>
+                <div class="chart2">
+                    <canvas id="donutChart2" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="linear-container">
+            <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+        {# Ładowanie skryptów JavaScript – zakładamy, że pliki JS znajdują się w public/js/ #}
+        <script src="{{ asset('js/linear-chart.js') }}"></script>
+        <script src="{{ asset('js/chart.js') }}"></script>
+        <script src="{{ asset('js/menu.js') }}"></script>
+        <script src="{{ asset('js/options.js') }}"></script>
+    </div>
+</body>
+</html>

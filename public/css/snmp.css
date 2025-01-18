@@ -1,0 +1,120 @@
+/* Styl dla pola wyszukiwania */
+.search-input, .search-input-phone {
+    width: 50%;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+/* Styl dla pola wyboru */
+.filter-select {
+    width: 30%;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+/* Styl dla segmentów */
+.segment, .segment-phone {
+    flex: 1;
+    padding: 2px;
+    text-align: center;
+}
+
+/* Styl dla kontenera tabeli */
+.snmp-management {
+    margin-top: 20px;
+    max-width: 90%;
+    width: 90%;
+    margin: 12.3vh auto;
+    padding: 20px;
+}
+
+/* Styl dla nagłówka tabeli */
+.table-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+    background-color: #555;
+    border-radius: 30px;
+    margin-bottom: 1.5em;
+    font-weight: bold;
+    color: white;
+    padding: 8px;
+}
+
+/* Styl dla elementów urządzeń */
+.device-item {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    border-radius: 15px;
+    font-weight: bold;
+    margin-bottom: 1vh;
+}
+
+/* Styl dla przycisku akcji */
+.ellipsisButton {
+    color: black;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Upewnienie się, że kolumny są wyśrodkowane */
+.title, .device-info, .title-phone, .device-info-phone {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.device-info a {
+    color: black;
+    text-decoration: none;
+}
+
+.device-info a:hover {
+    color: grey;
+}
+
+.device-list {
+    max-height: 62vh;
+    overflow-y: auto;
+}
+
+/* Ukrycie paska przewijania */
+.device-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+@media only screen and (max-width: 820px) {
+    .snmp-management {
+        margin: 3vh auto;
+    }
+
+    .title-phone, .device-info-phone, .search-input-phone, .segment-phone, .ellipsisButton {
+        display: none;
+    }
+
+    .table-header {
+        font-size: 15px;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 1em;
+    }
+
+    .device-item {
+        grid-template-columns: 25% 20% 20% 40%;
+        font-size: 15px;
+        padding: 8px;
+    }
+
+    .filter-select, .search-input {
+        width: 90%;
+    }
+}

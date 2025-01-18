@@ -1,0 +1,227 @@
+/* Reset marginesów */
+body {
+    margin: 0;
+}
+
+/* Główne tło strony logowania */
+.container-login {
+    background-image: url('../img/jakosc.png');
+    height: 100vh;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Kontener formularza logowania */
+.box {
+    background: rgba(38, 38, 37, 0.5);
+    border-radius: 15px;
+    max-width: 50%;
+    padding: 2em;
+}
+
+/* Formularz logowania */
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+/* Pola input */
+input {
+    background-color: rgba(121, 121, 121, 0.4);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    width: 22em;
+    border: none;
+    margin: 0.7em 1em;
+    line-height: 2.5em;
+    border-radius: 15px;
+    color: white;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* Placeholder w inputach */
+input::placeholder {
+    text-align: center;
+    color: white;
+}
+
+/* Przycisk logowania */
+.button-login {
+    background: black;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    border: none;
+    color: white;
+    margin-top: 1em;
+    line-height: 1.8em;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    font-size: 20px;
+}
+
+/* Link do rejestracji */
+.link-register {
+    color: white;
+    text-decoration: underline;
+}
+
+/* Tekst "Don’t have an account?" */
+.register-text {
+    color: white;
+    text-align: center;
+}
+
+/* Przycisk rejestracji */
+.register-button {
+    display: none;
+}
+
+/* Opcja "Remember Me" */
+.remember-me {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.5em;
+}
+
+/* Stylizacja checkboxa (zmniejszony rozmiar) */
+.remember-me input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    cursor: pointer;
+    appearance: none; /* Usuwa domyślny wygląd */
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+/* Gdy checkbox jest zaznaczony, dodajemy fajeczkę */
+.remember-me input[type="checkbox"]::after {
+    content: "✔";
+    font-size: 12px;
+    color: black;  /* Czarny znaczek ✔ */
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Pojawienie się fajeczki po zaznaczeniu */
+.remember-me input[type="checkbox"]:checked {
+    background-color: white;
+    border: 2px solid white;
+}
+
+.remember-me input[type="checkbox"]:checked::after {
+    display: block;
+}
+
+/* Tekst "Remember Me" */
+.remember-me label {
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+@media only screen and (max-device-width: 430px) {
+    body {
+        font-size: 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container-login {
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        height: 90%;
+        width: 70%;
+        background-image: none;
+    }
+
+    .box {
+        background: transparent;
+        width: 90%;
+        max-width: 400px;
+        padding: 2em;
+        border-radius: 20px;
+    }
+
+    input {
+        font-size: 20px;
+        border-radius: 20px;
+        line-height: 3em;
+        letter-spacing: 2px;
+        width: 80vw;
+    }
+
+    .button-login {
+        font-size: 20px;
+        margin-top: 2em;
+        line-height: 3em;
+        border-radius: 20px;
+        width: 80vw;
+    }
+
+    .register-button {
+        font-size: 20px;
+        display: block;
+        background: white;
+        color: black;
+        border: none;
+        margin-top: 1.5em;
+        line-height: 3em;
+        border-radius: 20px;
+        width: 90%;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .register-text {
+        display: none;
+    }
+
+    img {
+        height: 10vh;
+        margin-bottom: 8em;
+    }
+
+    .remember-me input[type="checkbox"] {
+        width: 40px;
+        height: 40px;
+        border-radius: 3px;
+    }
+
+    .remember-me input[type="checkbox"]::after {
+        font-size: 10px;
+    }
+
+    .remember-me input[type="checkbox"]::after {
+        content: "✔";
+        font-size: 30px;
+    }
+
+    .remember-me label {
+        font-size: 16px;
+        margin-left: 5px;
+    }
+
+}
