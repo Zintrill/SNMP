@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\DeviceRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DeviceRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'devices')]
 class Device
 {
     #[ORM\Id]
@@ -15,16 +14,10 @@ class Device
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $device_name = null;
-
-    #[ORM\Column]
-    private ?int $type_id = null;
+    private ?string $deviceName = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $address_ip = null;
-
-    #[ORM\Column]
-    private ?int $snmp_version_id = null;
+    private ?string $addressIp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
@@ -32,7 +25,7 @@ class Device
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
     public function getId(): ?int
@@ -40,58 +33,25 @@ class Device
         return $this->id;
     }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function getDeviceName(): ?string
     {
-        return $this->device_name;
+        return $this->deviceName;
     }
 
-    public function setDeviceName(string $device_name): static
+    public function setDeviceName(string $deviceName): self
     {
-        $this->device_name = $device_name;
-
-        return $this;
-    }
-
-    public function getTypeId(): ?int
-    {
-        return $this->type_id;
-    }
-
-    public function setTypeId(int $type_id): static
-    {
-        $this->type_id = $type_id;
-
+        $this->deviceName = $deviceName;
         return $this;
     }
 
     public function getAddressIp(): ?string
     {
-        return $this->address_ip;
+        return $this->addressIp;
     }
 
-    public function setAddressIp(string $address_ip): static
+    public function setAddressIp(string $addressIp): self
     {
-        $this->address_ip = $address_ip;
-
-        return $this;
-    }
-
-    public function getSnmpVersionId(): ?int
-    {
-        return $this->snmp_version_id;
-    }
-
-    public function setSnmpVersionId(int $snmp_version_id): static
-    {
-        $this->snmp_version_id = $snmp_version_id;
-
+        $this->addressIp = $addressIp;
         return $this;
     }
 
@@ -100,10 +60,9 @@ class Device
         return $this->username;
     }
 
-    public function setUsername(?string $username): static
+    public function setUsername(?string $username): self
     {
         $this->username = $username;
-
         return $this;
     }
 
@@ -112,10 +71,9 @@ class Device
         return $this->password;
     }
 
-    public function setPassword(?string $password): static
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
@@ -124,10 +82,9 @@ class Device
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
 }

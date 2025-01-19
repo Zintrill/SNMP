@@ -1,40 +1,39 @@
 security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username  # Upewnij się, że to właściwe pole!
-
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-            algorithm: auto
+                property: username
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        login:
-            pattern: ^/login$
-            stateless: false
-            provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                default_target_path: app_dashboard  # Gdzie przekierować po logowaniu
-                enable_csrf: true
-                username_parameter: _username
-                password_parameter: _password
-
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticators:
-                - App\Security\AppAuthenticator
+            entry_point: App\Security\AppAuthenticator
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
             logout:
                 path: app_logout
                 target: app_login
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 tydzień
+                path: /
+            custom_authenticators:
+                - App\Security\AppAuthenticator
 
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Rejestracja dla każdego
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }     # Logowanie dla każdego
+        - { path: ^/admin, roles: ROLE_ADMIN }                      # Dostęp do /admin tylko dla adminów
+        - { path: ^/dashboard, roles: ROLE_USER }                   # Dostęp do /dashboard tylko dla zalogowanych
+        - { path: ^/, roles: ROLE_USER }                            # Cała strona wymaga zalogowania, poza wyjątkami powyżej

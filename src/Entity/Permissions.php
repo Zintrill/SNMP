@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\PermissionsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PermissionsRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: "permissions")]
 class Permissions
 {
     #[ORM\Id]
@@ -13,10 +13,10 @@ class Permissions
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: "integer", unique: true)]
     private ?int $permission_id = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 50)]
     private ?string $role = null;
 
     public function getId(): ?int
@@ -32,7 +32,6 @@ class Permissions
     public function setPermissionId(int $permission_id): static
     {
         $this->permission_id = $permission_id;
-
         return $this;
     }
 
@@ -41,10 +40,9 @@ class Permissions
         return $this->role;
     }
 
-    public function setRole(?string $role): static
+    public function setRole(string $role): static
     {
         $this->role = $role;
-
         return $this;
     }
 }
