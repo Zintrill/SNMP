@@ -16,7 +16,7 @@
       <ul class="nav-menu">
         <li><a href="{{ path('app_dashboard_index') }}" class="nav-link button"><i class="fa-solid fa-table"></i> Dashboard</a></li>
         <li><a href="{{ path('app_snmp_index') }}" class="nav-link button"><i class="fa-solid fa-desktop"></i> SNMP Overview</a></li>
-        <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li>
+        {# <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li> #}
         <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
       </ul>
       <span class="nav-text">{{ username|default('name') }}</span>

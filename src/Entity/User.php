@@ -5,31 +5,29 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
-#[ORM\Entity(repositoryClass: "App\Repository\UserRepository")]
-#[ORM\Table(name: "users")] // Zapewnia, że tabela ma właściwą nazwę
+#[ORM\Entity]
+#[ORM\Table(name: "users")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 50, unique: true)]
+    #[ORM\Column(type: 'string', length: 50, unique: true)]
     private string $username;
 
-    #[ORM\Column(type: "string", length: 100, nullable: true)]
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $fullname = null;
 
-    #[ORM\Column(type: "string", length: 180, unique: true)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private string $email;
 
-    #[ORM\Column(type: "json")]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: 'string')]
     private string $password;
 
     public function getId(): ?int
@@ -53,13 +51,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->fullname;
     }
 
-    public function setFullname(string $fullname): self
+    public function setFullname(?string $fullname): self
     {
         $this->fullname = $fullname;
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -72,7 +70,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return $this->roles;
+        // Gwarantujemy przynajmniej ROLE_USER
+        $roles = $this->roles;
+        if (!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
@@ -94,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // W Symfony 6+ metoda eraseCredentials() powinna być pusta
+        // np. wyczyść plainPassword, jeśli taki trzymasz
     }
 
     public function getUserIdentifier(): string

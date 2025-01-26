@@ -1,24 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-
-    {# Style CSS #}
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/background.css') }}">
-
-    {# Ikony FontAwesome (jeśli są potrzebne) #}
-    <script src="https://kit.fontawesome.com/bb4f511674.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container-login">
         <div class="box">
             <form class="login-form" action="{{ path('app_login') }}" method="POST">
                 <img src="{{ asset('img/logo.svg') }}" alt="Logo" class="login-logo">
-                
-                {# Obsługa komunikatów błędów #}
+
+                {# Obsługa błędów #}
                 {% if error %}
                     <div class="alert alert-danger">
                         {{ error.messageKey|trans(error.messageData, 'security') }}
@@ -26,25 +20,38 @@
                 {% endif %}
 
                 <div class="input-group">
-                    <input name="_username" type="text" placeholder="Username" required autofocus value="{{ last_username }}">
+                    <input
+                        name="_username"
+                        type="text"
+                        placeholder="Username"
+                        required
+                        autofocus
+                        value="{{ last_username }}"
+                    />
                 </div>
 
                 <div class="input-group">
-                    <input name="_password" type="password" placeholder="Password" required>
+                    <input
+                        name="_password"
+                        type="password"
+                        placeholder="Password"
+                        required
+                    />
                 </div>
 
-                {# Opcja "Remember Me" #}
-                <div class="remember-me">
-                    <input type="checkbox" name="_remember_me" id="remember_me">
-                    <label for="remember_me">Remember me</label>
-                </div>
-
-                {# CSRF Token #}
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                {# CSRF #}
+                <input
+                    type="hidden"
+                    name="_csrf_token"
+                    value="{{ csrf_token('authenticate') }}"
+                />
 
                 <button type="submit" class="button-login">Login</button>
 
-                <p class="register-text">Don’t have an account? <a href="{{ path('app_register') }}" class="link-register">Create here</a>.</p>
+                <p class="register-text">
+                    Don’t have an account?
+                    <a href="{{ path('app_register') }}" class="link-register">Create here</a>.
+                </p>
             </form>
         </div>
     </div>

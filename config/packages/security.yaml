@@ -1,39 +1,39 @@
-security:
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+# config/packages/security.yaml
 
+security:
+    # Domyślny hasher haseł
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: auto
+
+    # Dostawca użytkowników (encja User)
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: username
 
+    # Firewalle
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         main:
-            lazy: true
             provider: app_user_provider
-            entry_point: App\Security\AppAuthenticator
+
+            # Standardowy formularz logowania
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+                default_target_path: /dashboard
+
+            # Wylogowanie
             logout:
                 path: app_logout
                 target: app_login
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 604800 # 1 tydzień
-                path: /
-            custom_authenticators:
-                - App\Security\AppAuthenticator
 
+    # Kontrola dostępu
     access_control:
-        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Rejestracja dla każdego
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }     # Logowanie dla każdego
-        - { path: ^/admin, roles: ROLE_ADMIN }                      # Dostęp do /admin tylko dla adminów
-        - { path: ^/dashboard, roles: ROLE_USER }                   # Dostęp do /dashboard tylko dla zalogowanych
-        - { path: ^/, roles: ROLE_USER }                            # Cała strona wymaga zalogowania, poza wyjątkami powyżej
+        - { path: ^/admin, roles: ROLE_USER }
+        - { path: ^/dashboard, roles: ROLE_USER }

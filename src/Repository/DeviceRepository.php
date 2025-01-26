@@ -1,4 +1,5 @@
 <?php
+// src/Repository/DeviceRepository.php
 
 namespace App\Repository;
 
@@ -6,9 +7,6 @@ use App\Entity\Device;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Device>
- */
 class DeviceRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +14,42 @@ class DeviceRepository extends ServiceEntityRepository
         parent::__construct($registry, Device::class);
     }
 
-//    /**
-//     * @return Device[] Returns an array of Device objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Sprawdza, czy nazwa urządzenia jest już zajęta.
+     */
+    public function isDeviceNameTaken(string $deviceName): bool
+    {
+        return (bool) $this->createQueryBuilder('d')
+            ->select('count(d.id)')
+            ->where('LOWER(d.deviceName) = LOWER(:name)')
+            ->setParameter('name', $deviceName)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-//    public function findOneBySomeField($value): ?Device
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Sprawdza, czy adres IP jest już zajęty.
+     */
+    public function isAddressIpTaken(string $addressIp): bool
+    {
+        return (bool) $this->createQueryBuilder('d')
+            ->select('count(d.id)')
+            ->where('d.addressIp = :ip')
+            ->setParameter('ip', $addressIp)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Sprawdza, czy MAC Address jest już zajęty.
+     */
+    public function isMacAddressTaken(string $macAddress): bool
+    {
+        return (bool) $this->createQueryBuilder('d')
+            ->select('count(d.id)')
+            ->where('d.macAddress = :mac')
+            ->setParameter('mac', $macAddress)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

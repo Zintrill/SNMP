@@ -1,31 +1,23 @@
-{# templates/security/register.html.twig #}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Page</title>
-
-    {# Style CSS #}
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/background.css') }}">
-
-    {# Ikony FontAwesome #}
-    <script src="https://kit.fontawesome.com/bb4f511674.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container-login">
         <div class="box">
             <form class="register-form" action="{{ path('app_register') }}" method="POST">
                 <img src="{{ asset('img/logo.svg') }}" alt="Logo" class="login-logo">
-                
-                {# Obsługa komunikatów flash #}
-                {% for message in app.flashes('success') %}
-                    <div class="alert alert-success">{{ message }}</div>
-                {% endfor %}
-                
+
                 {% for message in app.flashes('error') %}
                     <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
                 {% endfor %}
 
                 <div class="input-group">
@@ -48,12 +40,19 @@
                     <input name="confirm_password" type="password" placeholder="Confirm Password" required>
                 </div>
 
-                {# CSRF Token #}
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('register') }}">
+                {# CSRF #}
+                <input
+                    type="hidden"
+                    name="_csrf_token"
+                    value="{{ csrf_token('authenticate') }}"
+                />
 
                 <button type="submit" class="button-login">Register</button>
 
-                <p class="register-text">Already have an account? <a href="{{ path('app_login') }}" class="link-register">Log in here</a>.</p>
+                <p class="register-text">
+                    Already have an account?
+                    <a href="{{ path('app_login') }}" class="link-register">Log in here</a>.
+                </p>
             </form>
         </div>
     </div>

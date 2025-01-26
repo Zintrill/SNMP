@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function fetchUsers() {
-        fetch('getUsers')
+        fetch('/getUsers')
             .then(response => response.json())
             .then(users => {
                 const userList = document.getElementById('userList');

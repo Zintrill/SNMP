@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function fetchDevices() {
-        fetch('getDevices')
+        fetch('/getDeviceStatuses')
             .then(response => response.json())
             .then(devices => renderDeviceList(devices))
             .catch(error => console.error('Error:', error));

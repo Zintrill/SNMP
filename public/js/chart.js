@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         options: options2
     });
 
-    fetch('getDeviceStatusesByType')
+    fetch('/getDeviceStatuses')
         .then(response => response.json())
         .then(data => {
             if (!Array.isArray(data)) {
