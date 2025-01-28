@@ -20,7 +20,7 @@ class UsersController extends AbstractController
      * URL: /users
      * Nazwa trasy: app_users_list
      */
-    #[Route('/users', name: 'app_users_list')]
+    #[Route('/users', name: 'app_users_list', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
@@ -33,7 +33,6 @@ class UsersController extends AbstractController
             'user_role' => $this->getUser() ? $this->getUser()->getRoles()[0] : 'guest',
         ]);
     }
-
     /**
      * Zwraca listę użytkowników w formacie JSON.
      * URL: /getUsers

@@ -35,6 +35,7 @@ services:
       - symfony-network
     depends_on:
       - db
+      - rabbitmq  # Dodajemy zależność od RabbitMQ
 
   web:
     image: nginx:latest
@@ -48,6 +49,19 @@ services:
       - symfony-network
     depends_on:
       - php
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: symfony_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  # Port do komunikacji aplikacji
+      - "15672:15672"  # Panel zarządzania w przeglądarce
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - symfony-network
 
 networks:
   symfony-network:
