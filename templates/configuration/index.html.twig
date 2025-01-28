@@ -22,7 +22,11 @@
                 <li><a href="{{ path('app_dashboard_index') }}" class="nav-link button"><i class="fa-solid fa-table"></i> Dashboard</a></li>
                 <li><a href="{{ path('app_snmp_index') }}" class="nav-link button"><i class="fa-solid fa-desktop"></i> SNMP Overview</a></li>
                 <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li>
-                <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
+                
+                {# Zmienione: Wyświetlanie linku "Users" dla ROLE_ADMIN lub ROLE_OPERATOR #}
+                {% if is_granted('ROLE_ADMIN')%}
+                    <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
+                {% endif %}
             </ul>
             <span class="nav-text">{{ username|default('Guest') }}</span>
             <nav class="user-options">
@@ -54,7 +58,7 @@
     <div class="container-snmp-devices">
         <div class="snmp-management">
             {# Przyciski do zarządzania urządzeniami #}
-            {% if 'ROLE_ADMIN' in app.user.roles %}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_OPERATOR') %}
                 <button id="addDeviceButton" class="action-button">
                     <i class="fa-solid fa-circle-plus"></i> ADD DEVICE
                 </button>

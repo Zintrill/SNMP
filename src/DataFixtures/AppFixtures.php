@@ -1,62 +1,35 @@
 <?php
-// src/DataFixtures/AppFixtures.php
+// src/DataFixtures/StatusFixtures.php
 
 namespace App\DataFixtures;
 
-use App\Entity\User;
+use App\Entity\Status;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private $passwordHasher;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
-    }
+    public const STATUS_WAITING = 'Waiting';
+    public const STATUS_ONLINE = 'Online';
+    public const STATUS_OFFLINE = 'Offline';
 
     public function load(ObjectManager $manager): void
     {
-        // Tworzenie Administratora
-        $admin = new User();
-        $admin->setUsername('admin');
-        $admin->setEmail('admin@example.com');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword(
-            $this->passwordHasher->hashPassword(
-                $admin,
-                'adminpassword'
-            )
-        );
-        $manager->persist($admin);
+        $statuses = [
+            self::STATUS_WAITING,
+            self::STATUS_ONLINE,
+            self::STATUS_OFFLINE,
+        ];
 
-        // Tworzenie Operatora
-        $operator = new User();
-        $operator->setUsername('operator');
-        $operator->setEmail('operator@example.com');
-        $operator->setRoles(['ROLE_OPERATOR']);
-        $operator->setPassword(
-            $this->passwordHasher->hashPassword(
-                $operator,
-                'operatorpassword'
-            )
-        );
-        $manager->persist($operator);
-
-        // Tworzenie Standardowego Użytkownika
-        $user = new User();
-        $user->setUsername('user');
-        $user->setEmail('user@example.com');
-        $user->setRoles(['ROLE_USER']);
-        $user->setPassword(
-            $this->passwordHasher->hashPassword(
-                $user,
-                'userpassword'
-            )
-        );
-        $manager->persist($user);
+        foreach ($statuses as $statusName) {
+            // Sprawdzenie, czy status już istnieje, aby uniknąć duplikatów
+            $existingStatus = $manager->getRepository(Status::class)->findOneBy(['name' => $statusName]);
+            if (!$existingStatus) {
+                $status = new Status();
+                $status->setName($statusName);
+                $manager->persist($status);
+            }
+        }
 
         $manager->flush();
     }

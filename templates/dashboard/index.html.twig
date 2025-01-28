@@ -21,7 +21,9 @@
                 <li><a href="{{ path('app_dashboard_index') }}" class="nav-link button"><i class="fa-solid fa-table"></i> Dashboard</a></li>
                 <li><a href="{{ path('app_snmp_index') }}" class="nav-link button"><i class="fa-solid fa-desktop"></i> SNMP Overview</a></li>
                 <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li>
+                {% if 'ROLE_ADMIN' in app.user.roles %}
                 <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
+                {% endif %}
             </ul>
             {# Załóżmy, że zmienna username jest przekazywana z kontrolera #}
             <span class="nav-text">{{ username|default('Guest') }}</span>

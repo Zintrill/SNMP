@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
+
 #[Route('/configuration')]
 class ConfigurationController extends AbstractController
 {
@@ -54,8 +55,8 @@ class ConfigurationController extends AbstractController
         $devices = $this->entityManager->getRepository(Device::class)->findAll();
         $data = [];
 
-        // Sprawdzenie, czy użytkownik ma rolę admina
-        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        // Sprawdzenie, czy użytkownik ma rolę admina lub operatora
+        $isAdminOrOperator = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_OPERATOR');
 
         foreach ($devices as $device) {
             $deviceData = [
@@ -68,10 +69,13 @@ class ConfigurationController extends AbstractController
                 'snmp_version_id' => $device->getSnmpVersion()->getId(),
                 'username' => $device->getUserName() ?? 'N/A',
                 'description' => $device->getDescription() ?? 'N/A',
+                'status' => $device->getStatus(),
+                'mac_address' => $device->getMacAddress(),
+                'uptime' => 'N/A', // Dodaj odpowiednie pole, jeśli jest dostępne
             ];
 
-            // Dodaj hasło tylko dla administratorów
-            if ($isAdmin) {
+            // Dodaj hasło tylko dla administratorów i operatorów
+            if ($isAdminOrOperator) {
                 $deviceData['password'] = $device->getPassword();
             }
 
@@ -80,6 +84,7 @@ class ConfigurationController extends AbstractController
 
         return new JsonResponse($data);
     }
+
 
     #[Route('/getDeviceTypes', name: 'app_configuration_get_device_types', methods: ['GET'])]
     public function getDeviceTypes(): JsonResponse
@@ -119,106 +124,110 @@ class ConfigurationController extends AbstractController
         return new JsonResponse($data);
     }
 
-    // src/Controller/ConfigurationController.php
-
     #[Route('/addDevice', name: 'app_configuration_add_device', methods: ['POST'])]
-public function addDevice(Request $request): JsonResponse
-{
-    $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-    $deviceName = trim($request->request->get('deviceName'));
-    $deviceTypeId = $request->request->get('deviceType');
-    $addressIp = trim($request->request->get('deviceAddress'));
-    $snmpVersionId = $request->request->get('snmpVersion');
-    $userName = trim($request->request->get('userName'));
-    $password = trim($request->request->get('password'));
-    $description = trim($request->request->get('description'));
-
-    $errors = [];
-
-    // Walidacja pól
-    if (empty($deviceName)) {
-        $errors['deviceName'] = 'Device name is required.';
-    } else {
-        $existingDevice = $this->entityManager->getRepository(Device::class)->findOneBy(['deviceName' => $deviceName]);
-        if ($existingDevice) {
-            $errors['deviceName'] = 'Device name is already taken.';
+    public function addDevice(Request $request): JsonResponse
+    {
+        // Sprawdzenie, czy użytkownik ma rolę ROLE_ADMIN lub ROLE_OPERATOR
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_OPERATOR')) {
+            throw $this->createAccessDeniedException('Access denied. You do not have the required roles.');
         }
-    }
 
-    if (empty($deviceTypeId)) {
-        $errors['deviceType'] = 'Device type is required.';
-    } else {
-        $deviceType = $this->entityManager->getRepository(DeviceType::class)->find($deviceTypeId);
-        if (!$deviceType) {
-            $errors['deviceType'] = 'Invalid device type selected.';
+        $deviceName = trim($request->request->get('deviceName'));
+        $deviceTypeId = $request->request->get('deviceType');
+        $addressIp = trim($request->request->get('deviceAddress'));
+        $snmpVersionId = $request->request->get('snmpVersion');
+        $userName = trim($request->request->get('userName'));
+        $password = trim($request->request->get('password'));
+        $description = trim($request->request->get('description'));
+
+        $errors = [];
+
+        // Walidacja pól
+        if (empty($deviceName)) {
+            $errors['deviceName'] = 'Device name is required.';
+        } else {
+            $existingDevice = $this->entityManager->getRepository(Device::class)->findOneBy(['deviceName' => $deviceName]);
+            if ($existingDevice) {
+                $errors['deviceName'] = 'Device name is already taken.';
+            }
         }
-    }
 
-    if (empty($addressIp)) {
-        $errors['deviceAddress'] = 'Address IP is required.';
-    } else {
-        $existingIp = $this->entityManager->getRepository(Device::class)->findOneBy(['addressIp' => $addressIp]);
-        if ($existingIp) {
-            $errors['deviceAddress'] = 'Address IP is already in use.';
+        if (empty($deviceTypeId)) {
+            $errors['deviceType'] = 'Device type is required.';
+        } else {
+            $deviceType = $this->entityManager->getRepository(DeviceType::class)->find($deviceTypeId);
+            if (!$deviceType) {
+                $errors['deviceType'] = 'Invalid device type selected.';
+            }
         }
-    }
 
-    if (empty($snmpVersionId)) {
-        $errors['snmpVersion'] = 'SNMP version is required.';
-    } else {
-        $snmpVersion = $this->entityManager->getRepository(SnmpVersion::class)->find($snmpVersionId);
-        if (!$snmpVersion) {
-            $errors['snmpVersion'] = 'Invalid SNMP version selected.';
+        if (empty($addressIp)) {
+            $errors['deviceAddress'] = 'Address IP is required.';
+        } else {
+            $existingIp = $this->entityManager->getRepository(Device::class)->findOneBy(['addressIp' => $addressIp]);
+            if ($existingIp) {
+                $errors['deviceAddress'] = 'Address IP is already in use.';
+            }
         }
-    }
 
-    // Dodatkowa walidacja, np. dla ICMP
-    if (!empty($snmpVersionId) && isset($snmpVersion) && $snmpVersion->getId() === 4) {
-        // Jeśli SNMP version to ICMP, userName i password mogą być puste
-    } else {
-        if (empty($userName)) {
-            $errors['userName'] = 'Username is required for selected SNMP version.';
+        if (empty($snmpVersionId)) {
+            $errors['snmpVersion'] = 'SNMP version is required.';
+        } else {
+            $snmpVersion = $this->entityManager->getRepository(SnmpVersion::class)->find($snmpVersionId);
+            if (!$snmpVersion) {
+                $errors['snmpVersion'] = 'Invalid SNMP version selected.';
+            }
         }
-        if (empty($password)) {
-            $errors['password'] = 'Password is required for selected SNMP version.';
+
+        // Dodatkowa walidacja, np. dla ICMP
+        if (!empty($snmpVersionId) && isset($snmpVersion) && $snmpVersion->getId() === 4) {
+            // Jeśli SNMP version to ICMP, userName i password mogą być puste
+        } else {
+            if (empty($userName)) {
+                $errors['userName'] = 'Username is required for selected SNMP version.';
+            }
+            if (empty($password)) {
+                $errors['password'] = 'Password is required for selected SNMP version.';
+            }
         }
+
+        // Jeśli są błędy, zwróć je w formacie JSON
+        if (!empty($errors)) {
+            return new JsonResponse(['status' => 'error', 'errors' => $errors], 400);
+        }
+
+        // Jeśli nie ma błędów, kontynuuj tworzenie urządzenia
+        // Ustawienie domyślnej wartości dla status
+        $status = 'waiting'; // Dostosuj do swoich potrzeb
+
+        if (isset($snmpVersion) && $snmpVersion->getId() === 4) { // ICMP
+            $userName = null;
+            $password = null;
+        }
+
+        $device = new Device();
+        $device->setDeviceName($deviceName);
+        $device->setDeviceType($deviceType);
+        $device->setAddressIp($addressIp);
+        $device->setSnmpVersion($snmpVersion);
+        $device->setUserName($userName);
+        $device->setPassword($password);
+        $device->setDescription($description);
+        $device->setStatus($status);
+
+        $this->entityManager->persist($device);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Device added successfully.']);
     }
 
-    // Jeśli są błędy, zwróć je w formacie JSON
-    if (!empty($errors)) {
-        return new JsonResponse(['status' => 'error', 'errors' => $errors], 400);
-    }
-
-    // Jeśli nie ma błędów, kontynuuj tworzenie urządzenia
-    // Ustawienie domyślnej wartości dla status
-    $status = 'active'; // Dostosuj do swoich potrzeb
-
-    if (isset($snmpVersion) && $snmpVersion->getId() === 4) { // ICMP
-        $userName = null;
-        $password = null;
-    }
-
-    $device = new Device();
-    $device->setDeviceName($deviceName);
-    $device->setDeviceType($deviceType);
-    $device->setAddressIp($addressIp);
-    $device->setSnmpVersion($snmpVersion);
-    $device->setUserName($userName);
-    $device->setPassword($password);
-    $device->setDescription($description);
-    $device->setStatus($status);
-
-    $this->entityManager->persist($device);
-    $this->entityManager->flush();
-
-    return new JsonResponse(['status' => 'success', 'message' => 'Device added successfully.']);
-}
     #[Route('/updateDevice', name: 'app_configuration_update_device', methods: ['POST'])]
     public function updateDevice(Request $request): JsonResponse
     {
-        // Upewnij się, że użytkownik ma rolę ROLE_ADMIN
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        // Sprawdzenie, czy użytkownik ma rolę ROLE_ADMIN lub ROLE_OPERATOR
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_OPERATOR')) {
+            throw $this->createAccessDeniedException('Access denied. You do not have the required roles.');
+        }
 
         $deviceId = $request->request->get('deviceId');
         $deviceName = trim($request->request->get('deviceName'));
@@ -283,11 +292,14 @@ public function addDevice(Request $request): JsonResponse
 
         return new JsonResponse(['status' => 'success', 'message' => 'Device updated successfully.']);
     }
+
     #[Route('/deleteDevice', name: 'app_configuration_delete_device', methods: ['POST'])]
     public function deleteDevice(Request $request): JsonResponse
     {
-        // Upewnij się, że użytkownik ma rolę ROLE_ADMIN
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        // Sprawdzenie, czy użytkownik ma rolę ROLE_ADMIN lub ROLE_OPERATOR
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_OPERATOR')) {
+            throw $this->createAccessDeniedException('Access denied. You do not have the required roles.');
+        }
 
         $deviceId = $request->request->get('deviceId');
 
@@ -333,6 +345,11 @@ public function addDevice(Request $request): JsonResponse
     #[Route('/getDeviceById', name: 'app_configuration_get_device_by_id', methods: ['GET'])]
     public function getDeviceById(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        // Sprawdzenie, czy użytkownik ma rolę ROLE_ADMIN lub ROLE_OPERATOR
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_OPERATOR')) {
+            throw $this->createAccessDeniedException('Access denied. You do not have the required roles.');
+        }
+
         $deviceId = $request->query->get('id');
 
         if (!$deviceId) {
@@ -361,5 +378,4 @@ public function addDevice(Request $request): JsonResponse
 
         return new JsonResponse(['status' => 'success', 'device' => $deviceData]);
     }
-
 }

@@ -35,5 +35,7 @@ security:
 
     # Kontrola dostępu
     access_control:
-        - { path: ^/admin, roles: ROLE_USER }
+        - { path: ^/snmp, roles: ROLE_USER }
         - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/configuration, roles: ROLE_USER }
+        - { path: ^/users, roles: ROLE_ADMIN }

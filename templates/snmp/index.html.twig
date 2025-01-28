@@ -46,46 +46,50 @@
 
   <div class="container-snmp-devices">
     <div class="snmp-management">
+      <!-- Przycisk Pinguj Wszystkie Urządzenia -->
+      <button id="ping-all-btn" class="btn btn-primary"><i class="fas fa-broadcast-tower"></i> Ping All Devices</button>
+
       <div class="table-header">
         <div class="segment">
           <span class="title" data-sort="asc">
-            Device Name 
+            Device Name
             <i class="fas fa-sort" data-column="device_name"></i>
           </span>
         </div>
         <div class="segment">
           <span class="title" data-sort="asc">
-            Status 
+            Status
             <i class="fas fa-sort" data-column="status"></i>
           </span>
         </div>
         <div class="segment">
           <span class="title" data-sort="asc">
-            Type 
+            Type
             <i class="fas fa-sort" data-column="type"></i>
           </span>
         </div>
         <div class="segment">
           <span class="title" data-sort="asc">
-            Address IP 
+            Address IP
             <i class="fas fa-sort" data-column="ip_address"></i>
           </span>
         </div>
         <div class="segment-phone">
           <span class="title-phone" data-sort="asc">
-            Address MAC 
+            Address MAC
             <i class="fas fa-sort" data-column="mac_address"></i>
           </span>
         </div>
         <div class="segment-phone">
           <span class="title-phone" data-sort="asc">
-            UP Time 
+            UP Time
             <i class="fas fa-sort" data-column="uptime"></i>
           </span>
         </div>
-        <div class="segment-phone">
-          <span class="title-phone">Actions</span>
+        <div class="segment">
+          <span class="title">Actions</span>
         </div>
+        <!-- Wyszukiwanie i filtry -->
         <div class="segment">
           <input type="text" class="search-input" data-column="device_name" placeholder="Search Device Name...">
         </div>
@@ -115,7 +119,11 @@
           <input type="text" class="search-input-phone" data-column="mac_address" placeholder="Search Address MAC...">
         </div>
       </div>
-      <div id="DeviceList" class="device-list"></div>
+
+      <!-- Lista urządzeń -->
+      <div id="DeviceList" class="device-list">
+        <!-- Urządzenia są renderowane dynamicznie przez JavaScript -->
+      </div>
     </div>
   </div>
   

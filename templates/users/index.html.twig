@@ -16,10 +16,12 @@
       <ul class="nav-menu">
         <li><a href="{{ path('app_dashboard_index') }}" class="nav-link button"><i class="fa-solid fa-table"></i> Dashboard</a></li>
         <li><a href="{{ path('app_snmp_index') }}" class="nav-link button"><i class="fa-solid fa-desktop"></i> SNMP Overview</a></li>
-        {# <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li> #}
+        <li><a href="{{ path('app_configuration_index') }}" class="nav-link button"><i class="fa-solid fa-wrench"></i> Configuration</a></li>
+        {% if 'ROLE_ADMIN' in app.user.roles %}
         <li><a href="{{ path('app_users_list') }}" class="nav-link button"><i class="fa-solid fa-users"></i> Users</a></li>
-      </ul>
-      <span class="nav-text">{{ username|default('name') }}</span>
+        {% endif %}
+      </ul
+      <span class="nav-text">{{ username|default('Guest') }}</span>
       <nav class="user-options">
         <div class="options">
           <button id="userButton"><i class="fa-solid fa-circle-user"></i></button>
@@ -47,7 +49,7 @@
   
   <div class="container-users">
     <div class="user-management">
-      <button id="addUserButton" class="action-button"><i class="fa-solid fa-user-plus"></i> ADD USER</button>
+        <button id="addUserButton" class="action-button"><i class="fa-solid fa-user-plus"></i> ADD USER</button>
       <div class="table-header">
         <span class="title-phone">Full Name</span>
         <span class="title">Username</span>
@@ -62,7 +64,8 @@
   <div id="userModal" class="add-modal">
     <div class="modal-content">
       <span class="close-button" id="closeUserModal">&times;</span>
-      <form id="userForm" action="{{ path('app_user_add') }}" method="post" class="user-form">
+      <form id="userForm" action="{{ path('app_add_user') }}" method="post" class="user-form">
+      <input type="hidden" id="userId" name="userId">
         <div class="form-group">
           <label for="fullName">Full Name</label>
           <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
@@ -80,9 +83,9 @@
           <label for="userRole">Role</label>
           <select id="userRole" name="userRole" required>
             <option value="" disabled selected>Role</option>
-            <option value="1">Administrator</option>
-            <option value="2">Technician</option>
-            <option value="3">Operator</option>
+            <option value="ROLE_ADMIN">Admin</option>
+            <option value="ROLE_OPERATOR">Operator</option>
+            <option value="ROLE_USER">User</option>
           </select>
         </div>
         <div class="form-group">

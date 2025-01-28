@@ -92,6 +92,52 @@
     width: 0;
     height: 0;
 }
+* Styl dla przycisku PINGUJ WSZYSTKIE URZĄDZENIA */
+#ping-all-btn {
+    display: block;
+    margin: 10px auto;
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+/* Status urządzeń */
+.status-online {
+    color: green;
+    font-weight: bold;
+}
+
+.status-offline {
+    color: red;
+    font-weight: bold;
+}
+
+.status-waiting {
+    color: orange;
+    font-weight: bold;
+}
+/* Styl dla przycisku PINGUJ dla każdego urządzenia */
+.ping-btn {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+    margin-left: 8em;
+}
+
+.ping-btn:hover {
+    background-color: #1579bb;
+}
 
 @media only screen and (max-width: 820px) {
     .snmp-management {
