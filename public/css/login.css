@@ -83,62 +83,6 @@ input::placeholder {
     display: none;
 }
 
-/* Opcja "Remember Me" */
-.remember-me {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin-top: 0.5em;
-}
-
-/* Stylizacja checkboxa (zmniejszony rozmiar) */
-.remember-me input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 6px;
-    cursor: pointer;
-    appearance: none; /* Usuwa domyślny wygląd */
-    background-color: transparent;
-    border: 2px solid white;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-in-out;
-    position: relative;
-}
-
-/* Gdy checkbox jest zaznaczony, dodajemy fajeczkę */
-.remember-me input[type="checkbox"]::after {
-    content: "✔";
-    font-size: 12px;
-    color: black;  /* Czarny znaczek ✔ */
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* Pojawienie się fajeczki po zaznaczeniu */
-.remember-me input[type="checkbox"]:checked {
-    background-color: white;
-    border: 2px solid white;
-}
-
-.remember-me input[type="checkbox"]:checked::after {
-    display: block;
-}
-
-/* Tekst "Remember Me" */
-.remember-me label {
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    line-height: 1;
-}
-
 @media only screen and (max-device-width: 430px) {
     body {
         font-size: 36px;
@@ -166,18 +110,18 @@ input::placeholder {
     }
 
     input {
-        font-size: 20px;
-        border-radius: 20px;
+        font-size: 40px;
+        border-radius: 50px;
         line-height: 3em;
         letter-spacing: 2px;
         width: 80vw;
     }
 
     .button-login {
-        font-size: 20px;
+        font-size: 40px;
         margin-top: 2em;
         line-height: 3em;
-        border-radius: 20px;
+        border-radius: 50px;
         width: 80vw;
     }
 
@@ -201,27 +145,7 @@ input::placeholder {
 
     img {
         height: 10vh;
-        margin-bottom: 8em;
+        margin-bottom: 20vh;
+        margin-top: 10vh;
     }
-
-    .remember-me input[type="checkbox"] {
-        width: 40px;
-        height: 40px;
-        border-radius: 3px;
-    }
-
-    .remember-me input[type="checkbox"]::after {
-        font-size: 10px;
-    }
-
-    .remember-me input[type="checkbox"]::after {
-        content: "✔";
-        font-size: 30px;
-    }
-
-    .remember-me label {
-        font-size: 16px;
-        margin-left: 5px;
-    }
-
 }

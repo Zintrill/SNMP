@@ -2,24 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let LineData = {
         labels: [],
         datasets: [
-            {
-                label: 'Online',
-                borderColor: '#7FC008',
-                backgroundColor: '#7FC008',
-                data: [],
-            },
-            {
-                label: 'Offline',
-                borderColor: '#DB303F',
-                backgroundColor: '#DB303F',
-                data: [],
-            },
-            {
-                label: 'Waiting',
-                backgroundColor: '#F68D2B',
-                borderColor: '#F68D2B',
-                data: [],
-            }
+            { label: 'Online', borderColor: '#7FC008', backgroundColor: '#7FC008', data: [] },
+            { label: 'Offline', borderColor: '#DB303F', backgroundColor: '#DB303F', data: [] },
+            { label: 'Waiting', borderColor: '#F68D2B', backgroundColor: '#F68D2B', data: [] }
         ]
     };
 
@@ -30,49 +15,23 @@ document.addEventListener('DOMContentLoaded', function () {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    let ctx = canvas.getContext('2d');
+    let ctx = document.getElementById('myChart').getContext('2d');
     let myChart = new Chart(ctx, {
         type: 'line',
         data: LineData,
         options: {
-            animation: {
-                duration: 0,
-            },
+            animation: { duration: 0 },
             scales: {
-                x: {
-                    ticks: {
-                        color: 'black',
-                        font: {
-                            size: "15px",
-                            weight: 'bold'
-                        }
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: 'black',
-                        font: {
-                            size: "15px",
-                            weight: 'bold'
-                        }
-                    }
-                }
+                x: { ticks: { color: 'black', font: { size: 15, weight: 'bold' } } },
+                y: { ticks: { color: 'black', font: { size: 15, weight: 'bold' } } }
             },
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        font: {
-                            size: 15,
-                        },
-                        usePointStyle: true,
-                    }
-                }
+                legend: { position: 'bottom', labels: { font: { size: 15 }, usePointStyle: true } }
             }
         }
     });
 
-    function addData(label, time, counts) {
+    function addData(time, counts) {
         myChart.data.labels.push(time);
         myChart.data.datasets[0].data.push(counts.Online);
         myChart.data.datasets[1].data.push(counts.Offline);
@@ -80,34 +39,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (myChart.data.labels.length > 10) {
             myChart.data.labels.shift();
-            myChart.data.datasets.forEach((dataset) => {
-                dataset.data.shift();
-            });
+            myChart.data.datasets.forEach(dataset => dataset.data.shift());
         }
 
         myChart.update();
     }
 
     function fetchRealTimeData() {
-        fetch('getDeviceStatuses')
+        fetch('/dashboard/getDeviceStatistics')
             .then(response => response.json())
             .then(data => {
-                const statusCounts = {
-                    'Online': 0,
-                    'Offline': 0,
-                    'Waiting': 0
-                };
-
-                data.forEach(status => {
-                    if (statusCounts.hasOwnProperty(status.status)) {
-                        statusCounts[status.status] = parseInt(status.count);
-                    }
-                });
+                if (!data || !data.allDevices) throw new Error('Invalid data structure');
 
                 const currentTime = new Date().toLocaleTimeString();
-                addData('Status', currentTime, statusCounts);
+                addData(currentTime, data.allDevices);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error fetching chart data:', error));
     }
 
     function generateRealTimeData() {

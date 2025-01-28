@@ -1,122 +1,73 @@
 Chart.defaults.color = '#FFF';
+
 document.addEventListener('DOMContentLoaded', function () {
-    const options1 = {
+    const chartOptions = (title) => ({
         responsive: true,
         plugins: {
             legend: {
                 position: 'bottom',
                 labels: {
-                    font: {
-                        size: 15,
-                    },
+                    font: { size: 15 },
                     usePointStyle: true,
                     padding: 20
                 }
             },
             title: {
                 display: true,
-                text: 'Switches',
-                font: {
-                    size: 20,
-                    weight: 'bold'
-                },
+                text: title,
+                font: { size: 20, weight: 'bold' },
                 padding: 20
             }
         }
-    };
-
-    const options2 = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    font: {
-                        size: 15,
-                    },
-                    usePointStyle: true,
-                    padding: 20
-                }
-            },
-            title: {
-                display: true,
-                text: 'All Devices',
-                font: {
-                    size: 20,
-                    weight: 'bold'
-                },
-                padding: 20
-            },
-        },
-    };
+    });
 
     const initialData = {
         labels: ['Online', 'Offline', 'Waiting'],
         datasets: [{
             data: [0, 0, 0],
-            backgroundColor: [
-                '#7FC008', // Zielony
-                '#DB303F', // Czerwony
-                '#F68D2B' // Pomarańczowy
-            ],
+            backgroundColor: ['#7FC008', '#DB303F', '#F68D2B'],
             borderWidth: 0,
             hoverOffset: 4
         }]
     };
 
-    const donutChart1 = new Chart(document.getElementById('donutChart1'), {
+    const donutChartAllDevices = new Chart(document.getElementById('donutChart1'), {
         type: 'doughnut',
-        data: initialData,
-        options: options1
+        data: structuredClone(initialData),
+        options: chartOptions('All Devices')
     });
 
-    const donutChart2 = new Chart(document.getElementById('donutChart2'), {
+    const donutChartSwitches = new Chart(document.getElementById('donutChart2'), {
         type: 'doughnut',
-        data: initialData,
-        options: options2
+        data: structuredClone(initialData),
+        options: chartOptions('Switches')
     });
 
-    fetch('/getDeviceStatuses')
-        .then(response => response.json())
-        .then(data => {
-            if (!Array.isArray(data)) {
-                throw new Error('Data is not an array');
-            }
-
-            const statusCountsSwitches = {
-                'Online': 0,
-                'Offline': 0,
-                'Waiting': 0
-            };
-
-            const statusCountsAll = {
-                'Online': 0,
-                'Offline': 0,
-                'Waiting': 0
-            };
-
-            data.forEach(status => {
-                if (status.type === 'Switch' && statusCountsSwitches.hasOwnProperty(status.status)) {
-                    statusCountsSwitches[status.status] += parseInt(status.count);
+    function updateCharts() {
+        fetch('/dashboard/getDeviceStatistics')
+            .then(response => response.json())
+            .then(data => {
+                if (!data || !data.allDevices || !data.switches) {
+                    throw new Error('Invalid data structure');
                 }
-                if (statusCountsAll.hasOwnProperty(status.status)) {
-                    statusCountsAll[status.status] += parseInt(status.count);
-                }
-            });
 
-            donutChart1.data.datasets[0].data = [
-                statusCountsSwitches['Online'],
-                statusCountsSwitches['Offline'],
-                statusCountsSwitches['Waiting']
-            ];
-            donutChart1.update();
+                donutChartAllDevices.data.datasets[0].data = [
+                    data.allDevices.Online,
+                    data.allDevices.Offline,
+                    data.allDevices.Waiting
+                ];
+                donutChartAllDevices.update();
 
-            donutChart2.data.datasets[0].data = [
-                statusCountsAll['Online'],
-                statusCountsAll['Offline'],
-                statusCountsAll['Waiting']
-            ];
-            donutChart2.update();
-        })
-        .catch(error => console.error('Error:', error));
+                donutChartSwitches.data.datasets[0].data = [
+                    data.switches.Online,
+                    data.switches.Offline,
+                    data.switches.Waiting
+                ];
+                donutChartSwitches.update();
+            })
+            .catch(error => console.error('Error updating charts:', error));
+    }
+
+    updateCharts();
+    setInterval(updateCharts, 5000);
 });

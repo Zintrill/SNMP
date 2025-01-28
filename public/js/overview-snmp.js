@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.error) {
                 alert('Błąd: ' + data.error);
             } else {
+                console.log(`Ping result for ${deviceId}:`, data.pingResult); // 🔹 Debugowanie
                 if (deviceItem) {
                     const statusElement = deviceItem.querySelector(`[data-column="status"]`);
                     statusElement.textContent = data.status;

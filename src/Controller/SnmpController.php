@@ -85,71 +85,57 @@ class SnmpController extends AbstractController
      * Wyświetlanie szczegółów urządzenia
      * Trasa: /snmp/edit/{deviceId}
      */
-    #[Route('/edit/{deviceId}', name: 'app_snmp_edit', requirements: ['deviceId' => '\d+'], methods: ['GET'])]
-    public function edit(int $deviceId): Response
-    {
-        // Sprawdzenie, czy użytkownik ma rolę ROLE_ADMIN lub ROLE_OPERATOR
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_OPERATOR')) {
-            throw $this->createAccessDeniedException('Access denied. You do not have the required roles.');
-        }
-
-        // Pobranie urządzenia na podstawie ID
-        $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
-        if (!$device) {
-            throw $this->createNotFoundException('Brak takiego urządzenia');
-        }
-
-        return $this->render('snmp/edit.html.twig', [
-            'deviceId' => $deviceId,
-            'device' => $device,
-        ]);
-    }
-
     #[Route('/ping/{deviceId}', name: 'app_snmp_ping_device', methods: ['POST'])]
-    public function pingDevice(int $deviceId): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-    
-        $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
-        if (!$device) {
-            return new JsonResponse(['error' => 'Urządzenie nie zostało znalezione.'], Response::HTTP_NOT_FOUND);
-        }
-    
-        $ip = $device->getAddressIp();
-        if (!$ip) {
-            return new JsonResponse(['error' => 'Adres IP urządzenia jest nieprawidłowy.'], Response::HTTP_BAD_REQUEST);
-        }
-    
-           // Wykrywanie systemu operacyjnego
-        $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+public function pingDevice(int $deviceId): JsonResponse
+{
+    $this->denyAccessUnlessGranted('ROLE_USER');
 
-        // Wykonanie ping w zależności od systemu (więcej prób dla większej wiarygodności)
-        $pingCommand = $isWindows
-            ? sprintf('ping -n 4 %s', escapeshellarg($ip))  // Windows: -n liczba prób
-            : sprintf('ping -c 4 %s', escapeshellarg($ip)); // Linux/macOS: -c liczba prób
-
-        $pingResult = shell_exec($pingCommand);
-
-        // Analiza wyniku pingowania (poszukiwanie "0% packet loss" w odpowiedzi)
-        $isOnline = $isWindows
-            ? (strpos($pingResult, 'Received = 4') !== false)  // Windows sprawdza ilość odebranych pakietów
-            : (strpos($pingResult, '0% packet loss') !== false); // Linux/macOS sprawdza "0% packet loss"
-
-        $status = $isOnline ? 'Online' : 'Offline';
-
-        // 🔹 Aktualizacja statusu w bazie danych
-        $device->setStatus($status);
-        $this->entityManager->persist($device);
-        $this->entityManager->flush();
-
-        return new JsonResponse([
-            'deviceId' => $deviceId,
-            'status' => $status,
-            'pingResult' => $pingResult
-        ]);
+    $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
+    if (!$device) {
+        return new JsonResponse(['error' => 'Urządzenie nie zostało znalezione.'], Response::HTTP_NOT_FOUND);
     }
 
-    
+    $ip = $device->getAddressIp();
+    if (!$ip) {
+        return new JsonResponse(['error' => 'Adres IP urządzenia jest nieprawidłowy.'], Response::HTTP_BAD_REQUEST);
+    }
 
-    
+    // Wykrywanie systemu operacyjnego
+    $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+
+    // 🔹 Szybsze i dokładniejsze pingowanie (1 pakiet, timeout 1 sekunda)
+    $pingCommand = $isWindows
+        ? sprintf('ping -n 1 -w 1000 %s 2>&1', escapeshellarg($ip))  // Windows: -n 1, -w 1000 ms
+        : sprintf('ping -c 1 -W 1 %s 2>&1', escapeshellarg($ip));   // Linux/macOS: -c 1, -W 1 sek.
+
+    $pingResult = shell_exec($pingCommand);
+
+    if (!$pingResult) {
+        return new JsonResponse(['error' => 'Nie można wykonać pingowania. Może być blokowane przez system lub firewall.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    // 🔹 Dokładniejsza analiza wyniku pingowania
+    $isOnline = false;
+    if ($isWindows) {
+        // Windows: Sprawdzamy czy jest "Received = 1"
+        $isOnline = preg_match('/Received = 1/', $pingResult);
+    } else {
+        // Linux/macOS: Sprawdzamy czy jest "1 received" i brak "100% packet loss"
+        $isOnline = preg_match('/1 received/', $pingResult) && !preg_match('/100% packet loss/', $pingResult);
+    }
+
+    $status = $isOnline ? 'Online' : 'Offline';
+
+    // 🔹 Aktualizacja statusu w bazie danych
+    $device->setStatus($status);
+    $this->entityManager->persist($device);
+    $this->entityManager->flush();
+
+    return new JsonResponse([
+        'deviceId' => $deviceId,
+        'status' => $status,
+        'pingResult' => nl2br($pingResult) // 🔹 Debugowanie w UI
+    ]);
+}
+
 }

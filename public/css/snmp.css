@@ -163,4 +163,8 @@
     .filter-select, .search-input {
         width: 90%;
     }
+
+    .ping-btn{
+        display: none;
+    }
 }
