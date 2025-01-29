@@ -56,3 +56,4 @@ Security: Role-Based Access Control, Authentication System
 ![image](https://github.com/user-attachments/assets/ddd8ee5c-6f86-4d06-9e57-2f6babeed42b)
 ![image](https://github.com/user-attachments/assets/bc327b9f-5c2e-42e8-92c7-8c8ffdb092d8)
 ![image](https://github.com/user-attachments/assets/2f8edc66-7746-46fa-a5c1-f2879d2c2101)
+![image](https://github.com/user-attachments/assets/bcac5dcf-d9d2-42e6-867d-94226b52535a)
